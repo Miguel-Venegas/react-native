@@ -34,7 +34,7 @@ function RenderComments({comments}) {
       return(
           <Card title="Comments">
               <FlatList
-                data={comment}
+                data={comments}
                 renderItem={renderCommentItem}
                 keyExtractor={item => item.id.toString()}
               />
@@ -60,7 +60,7 @@ class CampsiteInfo extends Component {
     render() {
         const campsiteId = this.props.navigation.getParam('campsiteId');
         const campsite = this.state.campsites.filter(campsite => campsite.id === campsiteId)[0];
-        const comments = this.state.comments.filter(comment => comment.campsiteId === commentId);
+        const comments = this.state.comments.filter(comment => comment.campsiteId === campsiteId);
         return (
             <ScrollView>
                 <RenderCampsite campsite={campsite} />
