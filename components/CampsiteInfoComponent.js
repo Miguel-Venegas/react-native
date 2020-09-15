@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { Text, View, ScrollView, FlatList } from 'react-native';
-import { Card } from 'react-native-elements';
+import { Card, Icon } from 'react-native-elements';
 import { CAMPSITES} from '../shared/campsites';
 import {COMMENTS} from '../shared/comments';
 
@@ -13,6 +13,13 @@ function RenderCampsite({campsite}) {
                 <Text style={{margin: 10}}>
                     {campsite.description}
                 </Text>
+                <Icon
+                    name='heart-o'
+                    type='font-awesome'
+                    color='#f50'
+                    raised
+                    reverse
+                />
             </Card>
         );
     }
