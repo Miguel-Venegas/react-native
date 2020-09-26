@@ -24,6 +24,16 @@ const mapDispatchToProps = {
 };
 
 
+// In this task, you will update CampsiteInfoComponent.js. You will use the PanResponder to add support for a left-to-right drag/swipe gesture on the screen.
+
+
+// recognizeComment: Implement a new function inside the RenderCampsite component named recognizeComment. This should return true for a gesture from left to right that is over 200px, and false otherwise. This will be similar to how you implemented the recognizeDrag function, but your gesture will be in the opposite direction. 
+
+// PanResponder: Still inside the RenderCampsite component, use the recognizeComment function in the onPanResponderEnd panHandler. If the check for recognizeDrag returns false, then add an else if statement that will check if the recognizeComment function returns true, passing it the argument of gestureState. 
+
+// Modal: If the recognizeComment function returns true, then call the appropriate event handler to show the comment form modal.
+
+
 function RenderCampsite(props) {
 
     const {campsite, favorite} = props;
@@ -31,6 +41,8 @@ function RenderCampsite(props) {
     const view = React.createRef();
 
     const recognizeDrag = ({dx}) => (dx < -200) ? true : false;
+
+    const recognizeComment = ({dx}) => (dx > 200) ? true: false;
 
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: () => true,
@@ -58,7 +70,9 @@ function RenderCampsite(props) {
                     ],
                     { cancelable: false }
                 );
-            }
+            } else if (recognizeComment(gestureState)){
+                props.onShowModal();
+            } 
             return true;
         }
     });
@@ -77,7 +91,11 @@ function RenderCampsite(props) {
                     <Text style={{ margin: 10 }}>
                         {campsite.description}
                     </Text>
-                    <View style={styles.cardRow}>
+                    <View 
+                    style={styles.cardRow}
+                    ref={view}
+                    {...panResponder.panHandlers}
+                    >
                         <Icon
                             name={favorite ? 'heart' : 'heart-o'}
                             type='font-awesome'
@@ -132,7 +150,7 @@ function RenderComments({ comments }) {
             </Card>
         </Animatable.View>
     );
-}
+};
 
 class CampsiteInfo extends Component {
     constructor(props) {
@@ -144,7 +162,7 @@ class CampsiteInfo extends Component {
             text: '',
         };
     }
-
+    
     toggleModal() {
         this.setState({ showModal: !this.state.showModal });
     }
@@ -171,6 +189,8 @@ class CampsiteInfo extends Component {
         title: 'Campsite Information'
     }
 
+
+
     render() {
         const campsiteId = this.props.navigation.getParam('campsiteId');
         const campsite = this.props.campsites.campsites.filter(campsite => campsite.id === campsiteId)[0];
@@ -189,7 +209,8 @@ class CampsiteInfo extends Component {
                     transparent={false}
                     visible={this.state.showModal}
                     onRequestClose={() => this.toggleModal()}>
-                    <View style={styles.modal}>
+                    <View 
+                    style={styles.modal}>
                         <Rating
                             showRating
                             startingValue={this.state.rating}
