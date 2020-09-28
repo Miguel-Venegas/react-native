@@ -3,6 +3,8 @@ import { Text, View, StyleSheet,
     Picker, Switch, Button, Alert } from 'react-native';
 import DatePicker from 'react-native-datepicker';
 import * as Animatable from 'react-native-animatable';
+import * as Permissions from 'expo-permissions';
+import { Notifications } from 'expo';
 
 
 
@@ -37,6 +39,28 @@ class Reservation extends Component {
         });
     }
 
+    async obtainNotificationPermission(){
+        const permission = await Permissions.getAsync(Permissions.USER_FACING_NOTIFICATIONS);
+        if(permission.status !== 'granted'){
+            const permission = await Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
+            if(permission.status !== 'granted'){
+                Alert.alert('Permission not granted to show notifcations');
+            }
+            return permission;
+        }
+        return permission;
+    }
+
+    async presentLocalNotification(date){
+        const permission = await this.obtainNotificationPermission();
+        if(permission.status === 'granted'){
+            Notifications.presentLocalNotificationAsync({
+                title: 'Your Campsite Reservation Search ',
+                body:'Search for ' + date + ' requested'
+            });
+        }
+    }
+
     render() {
 
 
@@ -50,7 +74,11 @@ class Reservation extends Component {
                 onPress: () => console.log("Cancel Pressed"),
                 style: "cancel"
                 },
-                { text: "OK", onPress: () => this.resetForm() }
+                { 
+                    text: "OK", onPress: () => {
+                        this.presentLocalNotification(this.state.date);
+                        this.resetForm();
+                    } }
             ],
             { cancelable: false }
             );
